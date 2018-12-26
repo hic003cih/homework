@@ -5,7 +5,7 @@ export const add = (a, b) => {
   let sum=[];
   if(temp1.length>temp2.length){
     for(let i = 0; i < temp1.length; i++){
-
+      
       sum[i] = (Number(temp1[i]) + Number(temp2[i]));
       console.log('sum[i]' + sum[i]);
       if(sum[i]>=10){
@@ -15,6 +15,9 @@ export const add = (a, b) => {
     }
   }
 
+  
 
-  return parseInt(a, 10) + parseInt(b, 10);
+  return sum.reverse().join('');
 }
+
+
