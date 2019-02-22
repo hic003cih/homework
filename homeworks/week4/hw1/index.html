@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<title>week4 hw1</title>
+
+	<style>
+
+		body{
+			margin:0;
+		}
+		.wrapper{
+		width: 400px;
+        margin: 100px auto;
+        padding: 10px;
+        border-width: 1px;
+        border-style: solid; 
+        border-color: #DDDDDD;
+		}
+		#result{
+			width: 100%;
+			border-width: 1px;
+			border-style: solid; 
+			border-color: #CCCCCC;
+			text-align: right;
+			color: #3c3c3c;
+		}
+		.row{
+			display: flex;
+			justify-content: space-between;
+		  }
+		  .row-btn{
+			display: flex;
+        	justify-content: space-between;
+		  }
+		  .row-btn > button{
+			width: 94px;
+			height: 36px;
+			display: inline-block;
+			margin-top: 6px;
+			border-width: 1px;
+			border-style: solid; 
+			border-color: #CCCCCC;
+			font-family: sans-serif;
+			font-size: 16px;
+			color: #3c3c3c;
+		}
+		  .row-btn > button:hover{
+			  cursor: pointer;
+			  border-color: #AAAAAA;
+		  }
+		  .nums{
+			background: #FFFFFF;
+			}
+			#equal{
+        width: 196px;
+        background: #ff8d00;
+        border-style: none;
+      }
+
+      #equal:hover{
+        background: #ea8200;
+      }
+		/* .row-btn{
+			display: inline-block;
+		} */
+	</style>
+
+	<script>
+
+		let operator = '',
+			perand = '0',
+          	hasOperator = false;
+
+		/* DOMContentLoaded事件是當document被完整的讀取跟解析後就會被觸發
+        不會等待 stylesheets, 圖片和subframes完成讀取 */
+        
+        /* 如果 <script> 被放在 <link rel="stylesheet" ...>後面的話
+        須等到前面的stylesheet載入並完成解析，此時 DOMContentLoaded才會被觸發。 */
+
+		document.addEventListener('DOMContentLoaded', ()=>{
+
+		/* 
+			document.querySelector('.btn-pad').addEventListener("click", function(e){
+  			document.getElementById("demo").innerHTML = e;
+			下面的寫法等於上面的寫法,只是function寫法不同
+		}); */
+        document.querySelector('.btn-pad').addEventListener('click', e =>{
+
+			// 將id="result"的元素取出放到result中
+          let result = document.getElementById('result');
+          
+		  /*  e(如果是滑鼠點擊,為object MouseEvent)的
+		  e.target=>滑鼠點擊目標,如果是按鈕則為 HTMLButtonElement 
+		  e.target.className => 就是該Button元素(Element)的className
+		  */
+          if( e.target.className === 'nums' ){
+
+			//如果結果欄位不為0,且沒有任何暫存運算子
+            if( result.innerText !== '0' && !hasOperator ){
+
+				//如果點擊的目標(e.target)的innerText是小數點
+              if( e.target.innerText === '.' ) {
+
+                //檢查是否重複按了小數點,如果沒有點過小數點,則將result欄位的值加上小數點符號
+                if( !result.innerText.includes('.') ) result.innerText += e.target.innerText;
+
+              }
+			  //如果點擊的目標(e.target)的innerText不是小數點,是數字,就可以直接加上
+			  else{
+
+                result.innerText += e.target.innerText;
+
+              }
+
+            }
+			//如果結果欄位不為0,且已經暫存運算子(hasOperator = true 表示上一輪按了operator)
+			//這裡是處理result欄位顯示的數字,還沒做運算處理
+			else if( result.innerText !== '0' && hasOperator){
+
+              //hasOperator = true 表示上一輪按了operator
+			  //選了小數點,再顯示結果的地方顯示需要運算的數字並加上0.
+              if( e.target.innerText === '.' ) result.innerText = '0.';
+			  //沒有點選小數點,則直接顯示要做運算的數字
+              else result.innerText = e.target.innerText;
+				//將hasOperator設為false
+              hasOperator = false;
+
+            }else{
+				
+			  //如果結果欄位是0,而且點選小數點,直接在結果欄位後面加上小數點
+              if( e.target.innerText === '.' ) result.innerText += e.target.innerText;
+			  
+			  //其他則直接在結果欄位顯示數字
+              else result.innerText = e.target.innerText;
+            }
+          }
+		  //如果點選的是運算子,將螢幕上的數字暫存,並將運算子(e.target.innerText)暫存
+          if(e.target.className === 'operator'){
+
+            //如果按了operator 將螢幕上的數字與operator暫存
+            operand = result.innerText;
+
+            operator = e.target.innerText;
+
+            //hasOperator = true 表示下一輪按新數字
+            hasOperator = true;
+
+          }
+		  /* 點選 = 按鈕,對暫存的運算子做判斷
+		  在螢幕(result.innerText)上顯示結果
+		  因為有可能有小數點,需要用parseFloat轉換成浮點數作運算 
+		  operand為原始暫存的數字,result.innerText為點選運算子後,選擇的數字
+		  所以要用原始暫存的數字對result.innerText進行運算
+		  */
+           if( e.target.id === 'equal' ){
+
+            if( operator === '+' ) result.innerText = parseFloat( operand ) + parseFloat( result.innerText );
+            if( operator === '-' ) result.innerText = parseFloat( operand ) - parseFloat( result.innerText );
+            if( operator === '×' ) result.innerText = parseFloat( operand ) * parseFloat( result.innerText );
+            if( operator === '÷' ) result.innerText = parseFloat( operand ) / parseFloat( result.innerText );
+
+          }
+
+		  /* 選擇AC表示清空,對螢幕上的內容變更為0還有operator暫存清空,還有operand變更為0
+		  */
+          if( e.target.id === 'ac' ){
+
+             result.innerText = '0';
+             operator = '';
+             operand = '0';
+
+          }
+        })
+      })
+	</script>
+
+</head>
+<body>
+	<div class="wrapper">
+
+			<div id="result">0</div>
+			
+			<div class="btn-pad">
+	  
+			  <div class="row-btn">
+				<button id="ac">AC</button>
+				<button class="operator">÷</button>
+			  </div>
+	  
+			  <div class="row-btn">
+				<button class="nums">7</button>
+				<button class="nums">8</button>
+				<button class="nums">9</button>
+				<button class="operator">×</button>
+			  </div>
+	  
+			  <div class="row-btn">
+				<button class="nums">4</button>
+				<button class="nums">5</button>
+				<button class="nums">6</button>
+				<button class="operator">-</button>
+			  </div>
+	  
+			  <div class="row-btn">
+				<button class="nums">1</button>
+				<button class="nums">2</button>
+				<button class="nums">3</button>
+				<button class="operator">+</button>
+			  </div>
+	  
+			  <div class="row-btn">
+				<button class="nums">0</button>
+				<button class="nums">.</button>
+				<button id="equal">=</button>
+			  </div>
+	  
+			</div>
+		  </div>
+</body>
+</html>
