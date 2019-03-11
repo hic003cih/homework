@@ -1,0 +1,72 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <title>To Do List</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="description" content="This is To Do List" />
+        <meta charset="uft-8">
+        <link rel="stylesheet" type="text/css" media="screen" href="./style.css">
+        <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet"> 
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    </head>
+    <body>
+        <div class="todo__title">todo list</div>
+
+        <div class="container">
+            <div class="todo-item">
+            <div class="todo__add-icon unselectable">＋</div>
+            <input class="todo__input type="text" placeholder="請輸入您的待辦事項" autofocus />
+            <!-- autofocus 可以自動 focus 在 html 標籤上 -->
+            <div class="todo__add-btn unselectable">add</div>
+            </div>
+        </div>
+    </body>
+    <script>
+     $(document).ready( ()=>{
+         $('.todo__add-btn').click( ()=>{
+            if($('.todo__input').val()!==''){
+                
+                //取得<div class="todo-item"></div>元素
+                var todoItem = $('<div class="todo-item"></div>');
+
+                //在每個todoItem 元素結尾插入內容
+                todoItem.append('<div class="todo__completed-btn unselectable"></div>',
+                            '<div class="todo__content"></div>',
+                            '<div class="todo__del-btn"><img src="close.jpg" /></div>');
+
+                todoItem.children('.todo__content').text( $('.todo__input').val() );
+
+                //新增待辦事項到最上面
+                //尋找 dom中的第一個 todo-item 並在後面加上 todoItem
+                $('.todo-item').first().after(todoItem);
+
+                //新增後清空輸入框
+                //給予.todo__input空值
+                $('.todo__input').val('');
+
+                }
+         });
+         //完成待辦事項按鈕處理。有DOM Ready之後才生成的元件，要使用 on 掛載event listener
+        /* 修正一下上面這句註解：
+        $(document).on('click', '.abc', function(){doing...}) 的意思，好像比較接近
+        掛載eventListener在document上，但是 e.target.className === "abc" 時，才執行callback function的內容。
+        而不是動態掛載 eventListener 到每一個 className === "abc" 的元件上
+        */
+        $(document).on('click','.todo__completed-btn',function(){
+
+            if(!$(this).html()){
+                //打勾並且畫刪除線
+                $( this ).html('&radic;');
+                $( this ).next().css( 'text-decoration-line', 'line-through' );
+            }else{
+                $( this ).html('');
+                $( this ).next().css( 'text-decoration-line', 'none' );
+            };
+        });
+        //刪除待辦事項按鈕處理
+        $(document).on('click','.todo__del-btn',function(){
+            $( this ).parent().remove();
+        });
+     } );
+    </script>
+</html>

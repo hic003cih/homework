@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="This is Mentor Program Week4 hw4" />
+    <title>Kris's hw2</title>
+    <style>
+        .block{
+				display: inline-block;
+				width: 232px;
+				height: 80px;
+				background-color: red;
+				color: white;
+				margin: 36px;
+				text-align: center;
+				line-height: 80px;
+				font-family: sans-serif;
+			}
+    </style>
+    </head>
+
+    <body>
+        <h1 class="hide">hide</h1>
+        <h1 class='show'>show</h1>
+
+        <div class="block">A</div>
+    </body>
+    <script>
+      //var hide = q('.hide');
+      //var show = q('.show');
+      var A = q('.block');
+
+      var pressHide = document.querySelector('.hide');
+      var pressShow = document.querySelector('.show');
+      
+      pressHide.addEventListener('click',() => A.hide());
+
+      pressShow.addEventListener('click', ()=> A.show());
+
+      //hide.hide() // 隱藏
+      //show.show() // 顯示
+       
+      function q(element){
+          let selected = document.querySelector(element);
+          let newObj = {
+              hide:  function(){
+                  selected.style.display = "none";
+              },
+              show: function(){
+                selected.style.display = '';
+              }
+          }
+          return newObj;
+      };
+    </script>
+</html>
