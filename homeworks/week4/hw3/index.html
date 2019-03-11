@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<title>Kris's week4 hw3</title>
+
+	<style>
+
+		body{
+			margin:0;
+		}
+
+		.bg-img{
+			width:100%;
+			position: fixed;
+			top: -20px;
+			z-index: -1;
+		}
+
+		.container{
+			max-width: 1200px;
+			margin: 48px auto;
+		}
+
+		.stream{
+			display: inline-block;
+			background-color: #00000059;
+			width: 320px;
+			margin: 20px 4% 20px 20px;
+		}
+
+		.stream:hover{
+			cursor: pointer;
+			opacity: 0.8;
+			box-shadow: 0px 1px 1px 0 black;
+			transition: opacity 0.2s ease-in-out;
+		}
+
+		.stream_img{
+			width: 100%;
+		}
+
+		.stream_title{
+			padding: 8px 0;
+		}
+
+		.logo{
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+			margin-left: 20px;
+		}
+
+		.logo > img{
+			width: 100%;
+			border-radius:50%;
+			vertical-align: -45%;
+		}
+
+		.title{
+			display: inline-block;
+			color: #c5c5c5;
+			font-family: sans-serif;
+			padding-left: 20px;
+		}
+
+		.status{
+			width: 200px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+
+	<script>
+
+        /* DOMContentLoaded事件是當document被完整的讀取跟解析後就會被觸發
+        不會等待 stylesheets, 圖片和subframes完成讀取 */
+        
+        /* 如果 <script> 被放在 <link rel="stylesheet" ...>後面的話
+        須等到前面的stylesheet載入並完成解析，此時 DOMContentLoaded才會被觸發。 */
+
+        /* document.addEventListener(event, function, useCapture) 
+        
+        */
+		document.addEventListener('DOMContentLoaded', ()=>{
+
+			var req = new XMLHttpRequest();
+			var resp;
+
+            //使用querySelector選出class="stream"
+
+			var stream = document.querySelector('.stream');
+
+            //用gat的方式,連接到api
+            // api使用連接方式,可以在官方文件中找到
+            //後面的true是要用同步還是非同步,如果有非同步盡量用,同步必須等待main thread完成才能執行下一步,會造成網頁卡住,沒辦法按
+            // 利用 GET 方法、請求目的地 url、true 為非同步
+			req.open('GET', 'https://api.twitch.tv/kraken/streams/?game=League%20of%20Legends', true);
+
+			req.setRequestHeader('Accept', 'application/vnd.twitchtv.v5+json');
+			req.setRequestHeader('Client-ID', 'll1chxpyt6m2x5y9ogfp72agffedbu');
+
+            //當request完成後,執行這個callback function
+			req.onload = () =>{
+
+                //當status為200表示成功
+				if( req.status >= 200 && req.status < 400 ){
+
+                    //使用JSON.parse將API抓過來的JSON資料做拆解
+					resp = JSON.parse( req.responseText );
+
+					//console.log(stream.lastElementChild.firstElementChild.nextElementSibling)
+					
+                    //第一個stream div需要先另外執行showData,將資料存在第一個div上
+                    //下面的迴圈才能用appendChild
+					showData( stream, 0 );
+
+                    //第一筆資料額外處理,再取19筆資料,以迴圈處理
+					for( let i=1; i < 20; i++ ){
+
+                        /* var dupNode = node.cloneNode(deep); 
+                           複製 節點物件,deep為true的話 則該節點的所有後代節點也都會被複製
+                        */
+						let copyStream = stream.cloneNode( true );
+
+                        console.log(copyStream);
+                        /* 將複製的節點傳到showData含式 */
+						showData( copyStream, i );
+
+                        // 將使用querySelector選出class="container",並用appendChild向節點添加最後一個子節點 copyStream
+						document.querySelector('.container').appendChild( copyStream );
+					}
+                    
+                    //把class="stream"的div底下的元素做Attribute新增(屬性)和innerText的變更文字
+					function showData( stream, n ){
+
+                        //將<div class="stream_img"> 底下的 <img /> 元素 加上src屬性(顯示圖片),並給予API取回的resp.streams[n].preview.medium的值
+						stream.firstElementChild.firstElementChild.firstElementChild.setAttribute('src', resp.streams[n].preview.medium);
+						
+                        //將 <div class="stream_title"> 底下的 <div class="logo"> 底下的 <img /> 元素 加上src屬性(顯示圖片),並給予API取回的resp.streams[n].channel.logo的值
+                        stream.firstElementChild.lastElementChild.firstElementChild.firstElementChild.setAttribute('src', resp.streams[n].channel.logo);
+
+						//將 <div class="stream_title"> 底下的 <div class="title"> 底下的 <div class="status"> 元素 innerText(添加文字),並給予API取回的resp.streams[n].channel.status的值
+                        stream.firstElementChild.lastElementChild.lastElementChild.firstElementChild.innerText = resp.streams[n].channel.status;
+						
+                        //將 <div class="stream_title"> 底下的 <div class="title"> 底下的 <div class="display_name"> 元素 innerText(添加文字),並給予API取回的resp.streams[n].channel.display_name的值
+                        stream.firstElementChild.lastElementChild.lastElementChild.lastElementChild.innerText = resp.streams[n].channel.display_name;
+						
+                        //將 <a> 元素 加上href屬性(網頁連結),並給予API取回的resp.streams[n].channel.display_name的值
+                        stream.firstElementChild.setAttribute('href', resp.streams[n].channel.url);
+					}
+				}
+			}
+
+			req.send();
+		})
+	</script>
+
+</head>
+<body>
+	<div class="bg-img">
+		<img src="https://lolstatic-a.akamaihd.net/lolkit/1.1.6/resources/images/bg-default.jpg" />
+	</div>
+	<div class="container">
+		<div class="stream">
+			<a>
+				<div class="stream_img"><img /></div>
+				<div class="stream_title">
+					<div class="logo"><img /></div>
+					<div class="title">
+						<div class="status"></div>
+						<div class="display_name"></div>
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
+
+</body>
+</html>
